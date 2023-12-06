@@ -1,4 +1,8 @@
 import pandas as pd
 import streamlit as st
 
-st.write('My eggs')
+
+dt = pd.read_csv("./dataset/BTCUSDT-15m.csv")
+
+
+st.table(dt)
