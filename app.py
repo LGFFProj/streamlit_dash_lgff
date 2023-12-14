@@ -1,5 +1,6 @@
 from candlestickData import get_data
 from math import pi
+from productData import get_products
 import streamlit as st
 import pandas as pd
 from bokeh.plotting import figure, column, curdoc
@@ -8,7 +9,7 @@ from bokeh.plotting import figure, column, curdoc
 st.set_page_config(
     page_title="Atividade Avaliativa - N2", 
     page_icon=":rocket:", 
-    layout="centered", 
+    layout="wide",
     initial_sidebar_state="auto", 
     menu_items=None
 )
@@ -16,7 +17,7 @@ st.set_page_config(
 st.header(":money_with_wings: :chart: Grafico de Velas (Candlestick Chart) :candle:")
 
 #Pegando candlestick data da API-CoinBase
-data = get_data(product_id='BTC-USD', granularity='900')
+data = get_data(product_id='BTC-USD', granularity='3600')
 
 if data.status_code == 200:
     
@@ -32,7 +33,7 @@ if data.status_code == 200:
     dec = df.price_open > df.price_close
     w = 12*60*60*10
 
-    p = figure(x_axis_type="datetime", tools=TOOLS, width=1500, title='BTC-USD')
+    p = figure(x_axis_type="datetime", tools=TOOLS, width=1500, height=380 ,title='BTC-USD')
     p.xaxis.major_label_orientation = pi/5
     p.grid.grid_line_alpha=0.3
 
@@ -41,19 +42,28 @@ if data.status_code == 200:
     p.vbar(df.timestamp[dec], w, df.price_open[dec], df.price_close[dec], fill_color="#F2583E", line_color="black")
 
     #Botão para mudar o Estilo do grafico
-    cor_grafico = False
+    col1, col2, col3, col4 = st.columns([30,1,1.7,1])
 
-    col1, col2, col3 = st.columns([15, 15, 5])
+    with col2:
+        st.write(":sunny:")
 
     with col3:
-        if st.button(":dark_sunglasses:"):
-            
-            cor_grafico = not cor_grafico
+        cegueira = st.toggle(':new_moon:')
 
-            if cor_grafico:
-                doc = curdoc()
-                doc.theme = 'dark_minimal'
-                doc.add_root(p)
+    if cegueira:
+        doc = curdoc()
+        doc.theme = 'dark_minimal'
+        doc.add_root(p)
+    else:
+        doc = curdoc()
+        doc.theme = 'caliber'
+        doc.add_root(p)
+
+    #Barra Lateral
+    produtos = get_products()
+
+    with st.sidebar:
+        st.selectbox("Escolha seu Ativo:", produtos)
 
     st.bokeh_chart(p, use_container_width=True)
 
