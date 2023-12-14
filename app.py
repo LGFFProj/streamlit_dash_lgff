@@ -4,8 +4,15 @@ import streamlit as st
 import pandas as pd
 from bokeh.plotting import figure, column, curdoc
 
-#Tela Principal
-st.title("Atividade Avaliativa - N2")
+#Configurar Pagina
+st.set_page_config(
+    page_title="Atividade Avaliativa - N2", 
+    page_icon=":rocket:", 
+    layout="centered", 
+    initial_sidebar_state="auto", 
+    menu_items=None
+)
+
 st.header(":money_with_wings: :chart: Grafico de Velas (Candlestick Chart) :candle:")
 
 #Pegando candlestick data da API-CoinBase
@@ -33,21 +40,20 @@ if data.status_code == 200:
     p.vbar(df.timestamp[inc], w, df.price_open[inc], df.price_close[inc], fill_color="green", line_color="black")
     p.vbar(df.timestamp[dec], w, df.price_open[dec], df.price_close[dec], fill_color="#F2583E", line_color="black")
 
+    #Botão para mudar o Estilo do grafico
     cor_grafico = False
 
-    if st.button(":dark_sunglasses:"):
-        cor_grafico = not cor_grafico
-    
-    if cor_grafico:
-        doc = curdoc()
-        doc.theme = 'dark_minimal'
-        doc.add_root(p)
-    else: 
-        doc = curdoc()
-        doc.theme = 'light_minimal'
-        doc.add_root(p)
+    col1, col2, col3 = st.columns([15, 15, 5])
 
-    
+    with col3:
+        if st.button(":dark_sunglasses:"):
+            
+            cor_grafico = not cor_grafico
+
+            if cor_grafico:
+                doc = curdoc()
+                doc.theme = 'dark_minimal'
+                doc.add_root(p)
 
     st.bokeh_chart(p, use_container_width=True)
 
