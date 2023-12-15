@@ -8,6 +8,8 @@ def get_products():
 
     ids = [item['id'] for item in response.json()]
 
+    ids.sort()
+
     if response.status_code == 200:
         return ids
     else:
