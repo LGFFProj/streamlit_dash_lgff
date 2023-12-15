@@ -80,7 +80,7 @@ if data.status_code == 200:
 
     w = tempo_vela * 800
 
-    p = figure(x_axis_type="datetime", tools=TOOLS ,width=1500, height=380, title=option, x_range=(df['timestamp'].min(), df['timestamp'].max()))
+    p = figure(x_axis_type="datetime", tools=TOOLS ,width=1500, height=380, title=option, x_range=(df['timestamp'].min(), df['timestamp'].max()/2))
     p.xaxis.major_label_orientation = pi/5
     p.grid.grid_line_alpha=0.3
 
