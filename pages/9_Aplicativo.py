@@ -16,7 +16,8 @@ st.set_page_config(
     menu_items=None
 )
 
-st.header(":money_with_wings: :chart: Grafico de Velas (Candlestick Chart) :candle:")
+
+st.header(" :chart: Grafico de Velas (Candlestick Chart) :candle:")
 
 #Granularidade
 tempos = [60, 300, 900, 3600, 21600, 86400]
@@ -30,10 +31,13 @@ def formatarTempo(option):
     if option > 900:
         return f'{math.trunc(option / 60 / 60)} Hr'
 
-
+#barra lateral
 with st.sidebar:
-    option = st.selectbox("Escolha seu Ativo:", produtos, help="Quotagem do Par de Cripto-Moedas, O primero Item, antes do 'Hífen' é o qual está sendo Comprado/Vendido enquanto o segundo é o que será comprado/vendido contra, Imagine que você está Vendendo o primeiro para Comprar o segundo, pra ai esperar a variação do preço e depois obter o lucro.  ")
-    tempo_vela = st.selectbox("Escolha o tempo da Candle: ", tempos, format_func=formatarTempo ,help="Tempo ")
+    with st.form("form"):
+        option = st.selectbox("Escolha seu Ativo:", produtos, help="Quotagem do Par de Cripto-Moedas, O primero Item, antes do 'Hífen' é o qual está sendo Comprado/Vendido enquanto o segundo é o que será comprado/vendido contra, Imagine que você está Vendendo o primeiro para Comprar o segundo, pra ai esperar a variação do preço e depois obter o lucro.  ")
+        tempo_vela = st.selectbox("Escolha o tempo da Candle: ", tempos, format_func=formatarTempo ,help="Cada Barra/Candle representa uma quantidade de tempo no Grafico, seja ela de 5min ou 24 horas.")
+        st.form_submit_button("Vai!!")
+
 
 #Pegando candlestick data da API-CoinBase
 data = get_data(product_id=option, granularity=tempo_vela)
@@ -76,11 +80,9 @@ if data.status_code == 200:
     df_inc = df[inc]
     df_dec = df[dec]
 
-    print(tempo_vela)
+    w = tempo_vela * 900
 
-    w = tempo_vela * 800
-
-    p = figure(x_axis_type="datetime", tools=TOOLS ,width=1500, height=380, title=option, x_range=(df['timestamp'].min(), df['timestamp'].max()/2))
+    p = figure(x_axis_type="datetime", tools=TOOLS ,width=1500, height=380, title=option, x_range=(df['timestamp'].min(), df['timestamp'].max()))
     p.xaxis.major_label_orientation = pi/5
     p.grid.grid_line_alpha=0.3
 
@@ -110,6 +112,10 @@ if data.status_code == 200:
         doc = curdoc()
         doc.theme = 'caliber'
         doc.add_root(p)
+
+    p.xaxis.axis_label="Data"
+    p.yaxis.axis_label="Preço ($)"
+
 
     #Apresentar o Grafico Final
     st.bokeh_chart(p, use_container_width=True)
